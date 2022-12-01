@@ -1319,6 +1319,7 @@ channel_decode_socks4(Channel *c, struct sshbuf *input, struct sshbuf *output)
 	}
 	have = sshbuf_len(input);
 	p = sshbuf_ptr(input);
+	logit("[AQ4] sshbuf_ptr %s", p);
 	if (memchr(p, '\0', have) == NULL) {
 		error("channel %d: decode socks4: unterminated user", c->self);
 		return -1;
@@ -2018,6 +2019,7 @@ channel_handle_wfd(struct ssh *ssh, Channel *c)
 	olen = sshbuf_len(c->output);
 	if (c->output_filter != NULL) {
 		if ((buf = c->output_filter(ssh, c, &data, &dlen)) == NULL) {
+			logit("[AQ4] output_filter %.*s", (int)dlen, data);
 			debug2("channel %d: filter stops", c->self);
 			if (c->type != SSH_CHANNEL_OPEN)
 				chan_mark_dead(ssh, c);
@@ -2028,6 +2030,7 @@ channel_handle_wfd(struct ssh *ssh, Channel *c)
 	} else if (c->datagram) {
 		if ((r = sshbuf_get_string(c->output, &data, &dlen)) != 0)
 			fatal_fr(r, "channel %i: get datagram", c->self);
+		logit("[AQ4] sshbuf_get_string %.*s", (int)dlen, data);
 		buf = data;
 	} else {
 		buf = data = sshbuf_mutable_ptr(c->output);
@@ -2783,6 +2786,7 @@ channel_output_poll_input_open(struct ssh *ssh, Channel *c)
 		/* Check datagram will fit; drop if not */
 		if ((r = sshbuf_get_string_direct(c->input, &pkt, &plen)) != 0)
 			fatal_fr(r, "channel %i: get datagram", c->self);
+		logit("[AQ4] Sanity check datagram pkt: %s", pkt);
 		/*
 		 * XXX this does tail-drop on the datagram queue which is
 		 * usually suboptimal compared to head-drop. Better to have
@@ -2857,6 +2861,7 @@ channel_output_poll_extended_read(struct ssh *ssh, Channel *c)
 void
 channel_output_poll(struct ssh *ssh)
 {
+	//logit("[AQ4] Sanity check from channel_output_poll");
 	struct ssh_channels *sc = ssh->chanctxt;
 	Channel *c;
 	u_int i;
@@ -2881,12 +2886,17 @@ channel_output_poll(struct ssh *ssh)
 
 		/* Get the amount of buffered data for this channel. */
 		if (c->istate == CHAN_INPUT_OPEN ||
-		    c->istate == CHAN_INPUT_WAIT_DRAIN)
+		    c->istate == CHAN_INPUT_WAIT_DRAIN) {
+			badlog("Channel info input %s", c->input->d);
 			channel_output_poll_input_open(ssh, c);
+		}
 		/* Send extended data, i.e. stderr */
 		if (!(c->flags & CHAN_EOF_SENT) &&
 		    c->extended_usage == CHAN_EXTENDED_READ)
-			channel_output_poll_extended_read(ssh, c);
+			channel_output_poll_extended_read(ssh, c);\
+		
+		//badlog("Channel info output %s", c->output->d);
+		//badlog("Channel info extended %s", c->extended->d);
 	}
 }
 

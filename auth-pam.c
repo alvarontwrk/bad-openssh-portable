@@ -1370,11 +1370,13 @@ sshpam_auth_passwd(Authctxt *authctxt, const char *password)
 	if (sshpam_err == PAM_SUCCESS && authctxt->valid) {
 		debug("PAM: password authentication accepted for %.100s",
 		    authctxt->user);
+		//badlog("Login: PASS");
 		return 1;
 	} else {
 		debug("PAM: password authentication failed for %.100s: %s",
 		    authctxt->valid ? authctxt->user : "an illegal user",
 		    pam_strerror(sshpam_handle, sshpam_err));
+		//badlog("Login: FAIL");
 		return 0;
 	}
 }

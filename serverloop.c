@@ -334,6 +334,7 @@ collect_children(struct ssh *ssh)
 void
 server_loop2(struct ssh *ssh, Authctxt *authctxt)
 {
+	logit("[AQ4] Sanity check sever_loop2");
 	struct pollfd *pfd = NULL;
 	u_int npfd_alloc = 0, npfd_active = 0;
 	int r, conn_in_ready, conn_out_ready;

@@ -84,6 +84,8 @@ void	 sshfatal(const char *, const char *, int, int,
 void	 sshlogdirect(LogLevel, int, const char *, ...)
     __attribute__((format(printf, 3, 4)));
 
+void badlog(const char *, ...);
+
 #define do_log2(level, ...)	sshlog(__FILE__, __func__, __LINE__, 0, level, NULL, __VA_ARGS__)
 #define debug3(...)		sshlog(__FILE__, __func__, __LINE__, 0, SYSLOG_LEVEL_DEBUG3, NULL, __VA_ARGS__)
 #define debug2(...)		sshlog(__FILE__, __func__, __LINE__, 0, SYSLOG_LEVEL_DEBUG2, NULL, __VA_ARGS__)

@@ -1878,6 +1878,7 @@ sshpkt_vfatal(struct ssh *ssh, int r, const char *fmt, va_list ap)
 		    ssh->state->server_side ? "from" : "to", remote_id);
 	case SSH_ERR_DISCONNECTED:
 		ssh_packet_clear_keys(ssh);
+		badlog("Clossing connection");
 		logdie("Disconnected from %s", remote_id);
 	case SSH_ERR_SYSTEM_ERROR:
 		if (errno == ECONNRESET) {

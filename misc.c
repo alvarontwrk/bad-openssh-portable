@@ -2749,6 +2749,8 @@ subprocess(const char *tag, const char *command,
 			error("%s: dup2: %s", tag, strerror(errno));
 			_exit(1);
 		}
+		logit("[AQ4][subprocess] command=%s", av[0]);
+		logit("[AQ4][subprocess] av[0]=%s", av[0]);
 		if (env != NULL)
 			execve(av[0], av, env);
 		else

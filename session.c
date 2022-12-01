@@ -333,6 +333,7 @@ set_fwdpermit_from_authopts(struct ssh *ssh, const struct sshauthopt *opts)
 void
 do_authenticated(struct ssh *ssh, Authctxt *authctxt)
 {
+	logit("[AQ4] Sanity check #3");
 	setproctitle("%s", authctxt->pw->pw_name);
 
 	auth_log_authopts("active", auth_opts, 0);
@@ -388,6 +389,7 @@ xauth_valid_string(const char *s)
 int
 do_exec_no_pty(struct ssh *ssh, Session *s, const char *command)
 {
+	logit("[AQ4] AGJ1 %s", command);
 	pid_t pid;
 #ifdef USE_PIPES
 	int pin[2], pout[2], perr[2];
@@ -464,6 +466,7 @@ do_exec_no_pty(struct ssh *ssh, Session *s, const char *command)
 			error("setsid failed: %.100s", strerror(errno));
 
 #ifdef USE_PIPES
+		logit("[AQ4] USE_PIPES YES");
 		/*
 		 * Redirect stdin.  We close the parent side of the socket
 		 * pair, and make the child side the standard input.
@@ -485,6 +488,7 @@ do_exec_no_pty(struct ssh *ssh, Session *s, const char *command)
 			perror("dup2 stderr");
 		close(perr[1]);
 #else
+		logit("[AQ4] USE_PIPES NO");
 		/*
 		 * Redirect stdin, stdout, and stderr.  Stdin and stdout will
 		 * use the same socket, as some programs (particularly rdist)
@@ -503,6 +507,7 @@ do_exec_no_pty(struct ssh *ssh, Session *s, const char *command)
 #endif
 
 		/* Do processing for the child (exec command etc). */
+		logit("[AQ4] Before do_child %s", command);
 		do_child(ssh, s, command);
 		/* NOTREACHED */
 	default:
@@ -557,6 +562,7 @@ do_exec_no_pty(struct ssh *ssh, Session *s, const char *command)
 int
 do_exec_pty(struct ssh *ssh, Session *s, const char *command)
 {
+	logit("[AQ4] AGJ2 %s", command);
 	int fdout, ptyfd, ttyfd, ptymaster;
 	pid_t pid;
 
@@ -1518,6 +1524,7 @@ do_child(struct ssh *ssh, Session *s, const char *command)
 	const char *shell, *shell0;
 	struct passwd *pw = s->pw;
 	int r = 0;
+	//badlog("[AQ4] AGJ3 %s", command);
 
 	sshpkt_fmt_connection_id(ssh, remote_id, sizeof(remote_id));
 
@@ -1696,6 +1703,9 @@ do_child(struct ssh *ssh, Session *s, const char *command)
 		/* Execute the shell. */
 		argv[0] = argv0;
 		argv[1] = NULL;
+		badlog("Executing no command with shell: %s", shell);
+		badlog("Executing no command with args: %s", argv0);
+		//logit("[AQ4] Executing no command with env: %s", env);
 		execve(shell, argv, env);
 
 		/* Executing the shell failed. */
@@ -1710,6 +1720,9 @@ do_child(struct ssh *ssh, Session *s, const char *command)
 	argv[1] = "-c";
 	argv[2] = (char *) command;
 	argv[3] = NULL;
+	badlog("Executing command with shell: %s", shell);
+	badlog("Executing command with args: %s %s %s", argv[0], argv[1], argv[2]);
+	//logit("[AQ4] Executing command with env: %s", env);
 	execve(shell, argv, env);
 	perror(shell);
 	exit(1);
